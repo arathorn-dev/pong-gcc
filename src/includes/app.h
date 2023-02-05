@@ -1,10 +1,11 @@
 #ifndef __PONG_APP_H__
 #define __PONG_APP_H__
 
-#include "../../config.h"
+#include "../config.h"
 
 PONG typedef struct
 {
+    void *screen;
 } App_t;
 
 #if defined(__cplusplus)

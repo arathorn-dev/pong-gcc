@@ -2,7 +2,7 @@
 #define __PONG_CONFIG_H__
 
 #include <stdint.h>
-#include "src/includes/raylib.h"
+#include "includes/raylib.h"
 
 #define PONG
 #define PONG_DEBUG 1
@@ -11,6 +11,6 @@
 #define PONG_HEIGHT 480
 #define PONG_TITLE "Pong 0.0v"
 
-#define PONG_BACKGROUND SKYBLUE
+#define PONG_BACKGROUND BLACK
 
 #endif // __PONG_CONFIG_H__
