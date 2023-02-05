@@ -1,4 +1,7 @@
 #include "includes/app.h"
+#include "includes/package.h"
+
+Package_t *$package = NULL;
 
 //----------------------------------------------------------------------------------
 // Private functions declaration.
@@ -51,6 +54,7 @@ void close_app(App_t *const *ptr)
     if (*ptr != NULL)
     {
         _close_screen_app((*ptr));
+        close_package(&$package);
         MemFree(*ptr);
         ptr = NULL;
 #if defined(PONG_DEBUG)
@@ -71,6 +75,8 @@ static void _init_app(App_t *const app)
     // Load screens.
     app->screens = MemAlloc(sizeof(Screen_t *));
     app->screenIndex = 0;
+
+    $package = create_package();
 
     app->screens[app->screenIndex] = create_menu();
 }

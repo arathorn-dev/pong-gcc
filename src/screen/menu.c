@@ -1,6 +1,9 @@
 #include "../includes/screen.h"
+#include "../includes/package.h"
 
-Screen_t *create_menu(void)
+extern Package_t *$package;
+
+PONG Screen_t *create_menu(void)
 {
     Screen_t *screen = MemAlloc(sizeof(Screen_t));
     if (screen == NULL)
@@ -19,18 +22,19 @@ Screen_t *create_menu(void)
     return screen;
 }
 
-void update_menu(Screen_t *const screen)
+PONG void update_menu(Screen_t *const screen)
 {
     // TODO
 }
 
-void draw_menu(const Screen_t *const screen)
+PONG void draw_menu(const Screen_t *const screen)
 {
     ClearBackground(screen->background);
-    DrawText("Menu screen", 10, 10, 24, WHITE);
+    DrawTextEx($package->fonts[FONT_04B_03_E], "MSG", (Vector2){10, 10}, $package->fonts[FONT_04B_03_E].baseSize, 1, RAYWHITE);
+    // DrawText("Hello, world", 10, 10, 24, WHITE);
 }
 
-void close_menu(Screen_t **ptr)
+PONG void close_menu(Screen_t **ptr)
 {
     if ((*ptr) != NULL)
     {

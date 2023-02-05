@@ -3,9 +3,9 @@
 
 #include "../config.h"
 
-typedef enum
-{
+PONG typedef enum {
     MENU_SCREEN_E,
+    GAME_SCREEN_E,
 } ScreenType;
 
 PONG typedef struct
@@ -18,14 +18,13 @@ PONG typedef struct
 extern "C"
 {
 #endif
-//----------------------------------------------------------------------------------
-// Public functions.
-//----------------------------------------------------------------------------------
-    Screen_t *create_menu(void);
-    void update_menu(Screen_t *const);
-    void draw_menu(const Screen_t *const);
-    void close_menu(Screen_t **);
-
+    //----------------------------------------------------------------------------------
+    // Public functions.
+    //----------------------------------------------------------------------------------
+    PONG Screen_t *create_menu(void);
+    PONG void update_menu(Screen_t *const);
+    PONG void draw_menu(const Screen_t *const);
+    PONG void close_menu(Screen_t **);
 
 #if defined(__cplusplus)
 }
