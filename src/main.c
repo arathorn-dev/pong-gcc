@@ -2,10 +2,10 @@
 
 int main(void)
 {
-    App_t *const app = init_app();
+    App_t *const app = create_app();
 
     run_app(app);
-    end_app(&app);
+    close_app(&app);
 
     return 0;
 }

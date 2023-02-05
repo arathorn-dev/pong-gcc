@@ -2,10 +2,13 @@
 #define __PONG_APP_H__
 
 #include "../config.h"
+#include "screen.h"
 
 PONG typedef struct
 {
-    void *screen;
+    Screen_t **screens;
+    size_t screenIndex;
+
 } App_t;
 
 #if defined(__cplusplus)
@@ -13,11 +16,11 @@ extern "C"
 {
 #endif
 
-    App_t *const init_app(void);
+    App_t *const create_app(void);
 
     void run_app(App_t *const);
 
-    void end_app(App_t *const *);
+    void close_app(App_t *const *);
 
 #if defined(__cplusplus)
 }

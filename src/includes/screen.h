@@ -5,21 +5,27 @@
 
 typedef enum
 {
-    SCREEN_MENU_E,
-    SCREEN_GAME_E,
+    MENU_SCREEN_E,
 } ScreenType;
 
 PONG typedef struct
 {
-
+    ScreenType type;
+    Color background;
 } Screen_t;
 
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
+//----------------------------------------------------------------------------------
+// Public functions.
+//----------------------------------------------------------------------------------
+    Screen_t *create_menu(void);
+    void update_menu(Screen_t *const);
+    void draw_menu(const Screen_t *const);
+    void close_menu(Screen_t **);
 
-    Screen_t *create_screen(void);
 
 #if defined(__cplusplus)
 }
