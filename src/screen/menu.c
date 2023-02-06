@@ -17,8 +17,7 @@ PONG Screen_t *create_menu(void)
 #endif
 
     screen->type = MENU_SCREEN_E;
-    screen->background = SKYBLUE;
-
+    screen->background = PONG_COLOR_1;
     return screen;
 }
 
@@ -30,8 +29,14 @@ PONG void update_menu(Screen_t *const screen)
 PONG void draw_menu(const Screen_t *const screen)
 {
     ClearBackground(screen->background);
-    DrawTextEx($package->fonts[FONT_04B_03_E], "MSG", (Vector2){10, 10}, $package->fonts[FONT_04B_03_E].baseSize, 1, RAYWHITE);
-    // DrawText("Hello, world", 10, 10, 24, WHITE);
+
+    DrawTextEx(
+        $package->fonts[FONT_04B_03_E],
+        "New game",
+        (Vector2){10, 10},
+        $package->fonts[FONT_04B_03_E].baseSize,
+        1,
+        RAYWHITE);
 }
 
 PONG void close_menu(Screen_t **ptr)

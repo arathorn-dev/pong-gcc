@@ -43,5 +43,5 @@ clean:
 	rm -r $(OBJDIR)
 
 cleanall:
-	rm -r $(OBJDIR)
 	rm *.exe
+	rm -r $(OBJDIR)
