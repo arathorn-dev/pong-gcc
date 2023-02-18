@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include "includes/raylib.h"
+#include "includes/raymath.h"
 
 #define PONG
 #define PONG_DEBUG 1

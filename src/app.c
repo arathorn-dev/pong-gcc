@@ -1,7 +1,11 @@
 #include "includes/app.h"
 #include "includes/package.h"
 
+//----------------------------------------------------------------------------------
+// Shared variables definition(global)
+//----------------------------------------------------------------------------------
 Package_t *$package = NULL;
+
 
 //----------------------------------------------------------------------------------
 // Private functions declaration.
@@ -10,12 +14,10 @@ Package_t *$package = NULL;
 extern "C"
 {
 #endif
-
     static void _init_app(App_t *const);
     static void _update_app(App_t *const);
     static void _draw_app(const App_t *const);
     static void _close_screen_app(App_t *const);
-
 #if defined(__cplusplus)
 }
 #endif

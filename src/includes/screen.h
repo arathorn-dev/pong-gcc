@@ -5,7 +5,9 @@
 
 PONG typedef enum {
     UNKNOW_SCREEN_E = -1,
-    MENU_SCREEN_E   = 0,
+    EXIT_SCREEN_E = 0,
+    MENU_SCREEN_E,
+    OPTION_SCREEN_E,
     GAME_SCREEN_E,
 } ScreenType_e;
 

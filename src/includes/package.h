@@ -6,11 +6,13 @@
 typedef enum
 {
     FONT_04B_03_E,
-} FontEnum;
+    FONT_BM_GERMAR,
+    FONT_ATARI,
+} FontEnum_e;
 
 PONG typedef struct
 {
-    Font fonts[1];
+    Font fonts[3];
 } Package_t;
 
 #if defined(__cplusplus)
@@ -19,7 +21,6 @@ extern "C"
 #endif
     PONG Package_t *create_package(void);
     PONG void close_package(Package_t **);
-
 #if defined(__cplusplus)
 }
 #endif

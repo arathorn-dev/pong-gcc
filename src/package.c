@@ -10,7 +10,6 @@ extern "C"
 #endif
     static void _load_fonts(Package_t *const);
     static void _unload_fonts(Package_t *const);
-
 #if defined(__cplusplus)
 }
 #endif
@@ -48,8 +47,12 @@ PONG void close_package(Package_t **ptr)
 static void _load_fonts(Package_t *const package)
 {
     package->fonts[FONT_04B_03_E] = LoadFont("data/fonts/04b_03/04B_03__.TTF");
+    package->fonts[FONT_BM_GERMAR] = LoadFont("data/fonts/BM_germar/BMgermar.TTF");
+    package->fonts[FONT_ATARI] = LoadFont("data/fonts/Atari/AtariSmall.ttf");
 }
 static void _unload_fonts(Package_t *const package)
 {
     UnloadFont(package->fonts[FONT_04B_03_E]);
+    UnloadFont(package->fonts[FONT_BM_GERMAR]);
+    UnloadFont(package->fonts[FONT_ATARI]);
 }
