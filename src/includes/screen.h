@@ -4,13 +4,14 @@
 #include "../config.h"
 
 PONG typedef enum {
-    MENU_SCREEN_E,
+    UNKNOW_SCREEN_E = -1,
+    MENU_SCREEN_E   = 0,
     GAME_SCREEN_E,
-} ScreenType;
+} ScreenType_e;
 
 PONG typedef struct
 {
-    ScreenType type;
+    ScreenType_e type;
     Color background;
 } Screen_t;
 
@@ -24,6 +25,7 @@ extern "C"
     PONG Screen_t *create_menu(void);
     PONG void update_menu(Screen_t *const);
     PONG void draw_menu(const Screen_t *const);
+    PONG ScreenType_e unload_menu(const Screen_t *const);
     PONG void close_menu(Screen_t **);
 
 #if defined(__cplusplus)

@@ -18,6 +18,14 @@ else
 	CFLAGS += -g
 endif
 
+ifneq ($(OS),Windows_NT)
+	UNAMEOS = $(shell uname)
+	ifeq ($(UNAMEOS),Linux)
+		RFLAGS = -lGL -lm -lpthread -ldl -lrt -lX11 	
+	endif
+endif
+
+
 CFILES 		:= $(shell find $(SRCDIR)/ -type f -iname *.c)
 OBJFILES	:= $(patsubst %.c,%.o,$(patsubst $(SRCDIR)%,$(OBJDIR)%,$(CFILES)))
 SUBDIR		:= $(shell find $(SRCDIR)/ -type d)
@@ -43,5 +51,5 @@ clean:
 	rm -r $(OBJDIR)
 
 cleanall:
-	rm *.exe
+	rm $(APP)
 	rm -r $(OBJDIR)
