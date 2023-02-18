@@ -1,6 +1,5 @@
 *.exe
 *.o
 *.so
-libs/
 .vscode
 .obj

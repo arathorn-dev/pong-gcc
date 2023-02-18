@@ -3,13 +3,23 @@
 ###########################################################################
 APP 		:= pong
 C			:= gcc
-LIBSDIR		:= libs
 SRCDIR		:= src
 OBJDIR		:= obj
 INCDIR		:= -I$(SRCDIR)/includes
 CFLAGS 		:= -Wall -pedantic
 RFLAGS		:= -lopengl32 -lgdi32 -lwinmm
 MKDIR		:= mkdir -p
+
+ifeq ($(OS),Windows_NT)
+	LIBSDIR =libs/windows
+else
+	UNAMEOS = $(shell uname)
+	ifeq ($(UNAMEOS),Linux)
+		RFLAGS = -lGL -lm -lpthread -ldl -lrt -lX11 
+		LIBSDIR =libs/linux 	
+	endif
+endif
+
 LIBS		:= $(LIBSDIR)/libraylib.a
 
 ifdef RELEASE
@@ -18,12 +28,7 @@ else
 	CFLAGS += -g
 endif
 
-ifneq ($(OS),Windows_NT)
-	UNAMEOS = $(shell uname)
-	ifeq ($(UNAMEOS),Linux)
-		RFLAGS = -lGL -lm -lpthread -ldl -lrt -lX11 	
-	endif
-endif
+
 
 
 CFILES 		:= $(shell find $(SRCDIR)/ -type f -iname *.c)
