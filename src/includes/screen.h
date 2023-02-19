@@ -14,21 +14,32 @@ PONG typedef enum {
 PONG typedef struct
 {
     ScreenType_e type;
-    Color background;
+    ScreenType_e nextScreenType;
 } Screen_t;
 
+//----------------------------------------------------------------------------------
+// Public functions.
+//----------------------------------------------------------------------------------
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-    //----------------------------------------------------------------------------------
-    // Public functions.
-    //----------------------------------------------------------------------------------
-    PONG Screen_t *create_menu(void);
+    
+    PONG Screen_t *init_menu(void);
     PONG void update_menu(Screen_t *const);
     PONG void draw_menu(const Screen_t *const);
-    PONG ScreenType_e unload_menu(const Screen_t *const);
-    PONG void close_menu(Screen_t **);
+    PONG void unload_menu(Screen_t **);
+
+
+    PONG Screen_t *init_option(void);
+    PONG void  update_option(Screen_t *const);
+    PONG void draw_option(const Screen_t *const);
+    PONG void unload_option(Screen_t **);
+
+    PONG Screen_t *init_game(void);
+    PONG void  update_game(Screen_t *const);
+    PONG void draw_game(const Screen_t *const);
+    PONG void unload_game(Screen_t **);
 
 #if defined(__cplusplus)
 }

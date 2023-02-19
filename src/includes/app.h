@@ -6,8 +6,8 @@
 
 PONG typedef struct
 {
-    Screen_t **screens;
-    size_t screenIndex;
+    Screen_t *currentScreen;
+    bool isRunning;
 
 } App_t;
 

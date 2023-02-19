@@ -15,8 +15,6 @@ typedef struct {
 //----------------------------------------------------------------------------------
 // Static variables.
 //----------------------------------------------------------------------------------
-static ScreenType_e nextScreen = UNKNOW_SCREEN_E;
-
 static const char *pongText = "pong";
 static const char *newGameText = "new game";
 static const char *optionText = "option";
@@ -37,8 +35,8 @@ static Word_t authorWord = {0};
 extern "C" {
 #endif
     PONG static void _init_word(void);
-    PONG static void _update_word(void);
-    PONG static void _draw_word(void);
+    PONG static void _update(Screen_t *);
+    PONG static void _draw(void);
 #if defined(__cplusplus)
 }
 #endif
@@ -46,7 +44,7 @@ extern "C" {
 //----------------------------------------------------------------------------------
 // Public functions.
 //----------------------------------------------------------------------------------
-PONG Screen_t *create_menu(void)
+PONG Screen_t *init_menu(void)
 {
     Screen_t *screen = MemAlloc(sizeof(Screen_t));
     if (screen == NULL)
@@ -58,28 +56,23 @@ PONG Screen_t *create_menu(void)
     TraceLog(LOG_INFO, "[MENU]Screen_t structure created.");
 #endif
     screen->type = MENU_SCREEN_E;
-    screen->background = PONG_COLOR_1;
+    screen->nextScreenType = UNKNOW_SCREEN_E;
     _init_word();
     return screen;
 }
 
 PONG void update_menu(Screen_t *const screen)
 {
-    _update_word();
+    _update(screen);
 }
 
 PONG void draw_menu(const Screen_t *const screen)
 {
-    ClearBackground(screen->background);
-    _draw_word();
+    ClearBackground(PONG_COLOR_1);
+    _draw();
 }
 
-PONG ScreenType_e unload_menu(const Screen_t *const screen)
-{
-   //TODO 
-}
-
-PONG void close_menu(Screen_t **ptr)
+PONG void unload_menu(Screen_t **ptr)
 {
     if ((*ptr) != NULL)
     {
@@ -90,6 +83,7 @@ PONG void close_menu(Screen_t **ptr)
 #endif
     }
 }
+
 
 //----------------------------------------------------------------------------------
 // Static functions implementation.
@@ -177,7 +171,7 @@ PONG static void _init_word(void)
     authorWord.color = PONG_COLOR_3;
 }
 
-PONG static void _update_word(void)
+PONG static void _update(Screen_t *screen)
 {
     if(IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP)) {
         option = Clamp(--option, 0, 2);
@@ -197,15 +191,15 @@ PONG static void _update_word(void)
         {
         case 0:
             TraceLog(LOG_INFO, "[GAME]");
-            nextScreen = GAME_SCREEN_E;
+            screen->nextScreenType = GAME_SCREEN_E;
             break;
         case 1:
             TraceLog(LOG_INFO, "[OPTION]");
-            nextScreen = OPTION_SCREEN_E;
+            screen->nextScreenType = OPTION_SCREEN_E;
             break;
         case 2:
             TraceLog(LOG_INFO, "[EXIT]");
-            nextScreen = EXIT_SCREEN_E;
+            screen->nextScreenType = EXIT_SCREEN_E;
             break;
         default:
             break;
@@ -213,7 +207,7 @@ PONG static void _update_word(void)
     }
 }
 
-PONG static void _draw_word(void)
+PONG static void _draw(void)
 {
     // --
     DrawRectangle(

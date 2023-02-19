@@ -8,16 +8,30 @@ Package_t *$package = NULL;
 
 
 //----------------------------------------------------------------------------------
-// Private functions declaration.
+// Local variables definition.
+//----------------------------------------------------------------------------------
+static float alpha = 0.0f;
+static bool isTransition = false;
+static bool isFadeOut;
+static ScreenType_e fromScreen = UNKNOW_SCREEN_E;
+static ScreenType_e toScreen = UNKNOW_SCREEN_E;
+
+
+//----------------------------------------------------------------------------------
+// Local functions declaration.
 //----------------------------------------------------------------------------------
 #if defined(__cplusplus)
 extern "C"
 {
 #endif
-    static void _init_app(App_t *const);
-    static void _update_app(App_t *const);
-    static void _draw_app(const App_t *const);
-    static void _close_screen_app(App_t *const);
+    PONG static void _init_app(App_t *const);
+    PONG static void _update_app(App_t *const);
+    PONG static void _draw_app(const App_t *const);
+    PONG static void _close_screen_app(App_t *const);
+
+    PONG static void _transitionToScreen(App_t *const, ScreenType_e screen);
+    PONG static void _updateTransition(App_t *const app);
+    PONG static void _drawTransition(void);
 #if defined(__cplusplus)
 }
 #endif
@@ -44,7 +58,7 @@ App_t *const create_app(void)
 //
 void run_app(App_t *const app)
 {
-    while (!WindowShouldClose())
+    while (app->isRunning)
     {
         _update_app(app);
         _draw_app(app);
@@ -74,46 +88,72 @@ static void _init_app(App_t *const app)
 {
     InitWindow(PONG_WIDTH, PONG_HEIGHT, PONG_TITLE);
     InitAudioDevice();
-    // Load screens.
-    app->screens = MemAlloc(sizeof(Screen_t *));
-    app->screenIndex = 0;
-
+    SetTargetFPS(PONG_FPS);
+    // Load screen.
     $package = create_package();
-
-    app->screens[app->screenIndex] = create_menu();
+    app->currentScreen = init_menu();
+    app->isRunning = true;
 }
 //
 static void _update_app(App_t *app)
 {
-    const size_t index = app->screenIndex;
-    Screen_t *screen = app->screens[index];
-
-    switch (screen->type)
-    {
-    case MENU_SCREEN_E:
-        update_menu(screen);
-        break;
-
-    default:
-        break;
+    Screen_t *const screen = app->currentScreen;
+    if (isTransition) {
+        _updateTransition(app);
+    } else {
+        switch (screen->type)
+        {
+        case MENU_SCREEN_E:
+            update_menu(screen);
+            if (screen->nextScreenType != UNKNOW_SCREEN_E) 
+            {
+                if (screen->nextScreenType == EXIT_SCREEN_E)
+                 {
+                    app->isRunning = false;
+                 } else
+                 {
+                    _transitionToScreen(app, screen->nextScreenType);
+                 }
+            }
+                
+            break;
+        case OPTION_SCREEN_E:
+            update_option(screen);
+            if (screen->nextScreenType != UNKNOW_SCREEN_E) 
+                _transitionToScreen(app, screen->nextScreenType);
+            break;
+        case GAME_SCREEN_E:
+            update_game(screen);
+            if (screen->nextScreenType != UNKNOW_SCREEN_E) 
+                _transitionToScreen(app, screen->nextScreenType);
+            break;
+        default:
+            break;
+        }
     }
 }
 //
 static void _draw_app(const App_t *const app)
 {
     BeginDrawing();
-    const size_t index = app->screenIndex;
-    const Screen_t *const screen = app->screens[index];
+    const Screen_t *const screen = app->currentScreen;
 
     switch (screen->type)
     {
     case MENU_SCREEN_E:
         draw_menu(screen);
         break;
-
+    case OPTION_SCREEN_E:
+        draw_option(screen);
+        break;
+    case GAME_SCREEN_E:
+        draw_game(screen);
+        break;
     default:
         break;
     }
+
+    if (isTransition) _drawTransition();
     EndDrawing();
 }
 
@@ -121,16 +161,90 @@ static void _close_screen_app(App_t *const app)
 {
     if (app != NULL)
     {
-        const size_t index = app->screenIndex;
-        Screen_t *screen = app->screens[index];
+        Screen_t *screen = app->currentScreen;
         switch (screen->type)
         {
         case MENU_SCREEN_E:
-            close_menu(&screen);
+            unload_menu(&screen);
             break;
-
-        default:
-            break;
+        case OPTION_SCREEN_E:
+            unload_option(&screen);
+        break;
+        case GAME_SCREEN_E:
+            unload_game(&screen);
+        break;
+        default:break;
         }
     }
+}
+
+PONG static void _transitionToScreen(App_t *const app, ScreenType_e screen)
+{
+    alpha = 0.0f;
+    isTransition = true;
+    isFadeOut = false;
+    fromScreen = app->currentScreen->type;
+    toScreen = screen;
+}
+
+PONG static void _updateTransition(App_t *const app)
+{
+    if (isFadeOut)
+    {
+        alpha -= 0.05f;
+        if (alpha < -0.01f) 
+        {
+            alpha = 0.0f;
+            isTransition = false;
+            isFadeOut = false;
+            fromScreen = UNKNOW_SCREEN_E;
+            toScreen = UNKNOW_SCREEN_E;
+        }
+    } else 
+    {
+        alpha += 0.08f;
+        if (alpha > 1.01f) 
+        {
+            switch(fromScreen)
+            {
+                case MENU_SCREEN_E:
+                    unload_menu(&app->currentScreen);
+                    break;
+                case OPTION_SCREEN_E:
+                    unload_option(&app->currentScreen);
+                    break;
+                case GAME_SCREEN_E:
+                    unload_game(&app->currentScreen);
+                    break;
+                default: break;
+            }
+
+            switch(toScreen)
+            {
+                case MENU_SCREEN_E:
+                    app->currentScreen = init_menu();
+                    break;
+                case OPTION_SCREEN_E:
+                    app->currentScreen = init_option();
+                    break;
+                case GAME_SCREEN_E:
+                    app->currentScreen = init_game();
+                    break;
+                default: break;
+            }
+
+            isFadeOut = true;
+        } 
+    }
+}
+
+PONG static void _drawTransition(void)
+{
+    DrawRectangle(
+        0,
+        0,
+        GetScreenWidth(),
+        GetScreenHeight(),
+        Fade(BLACK, alpha)     
+    );
 }

@@ -12,6 +12,7 @@
 #define PONG_WIDTH 640
 #define PONG_HEIGHT 480
 #define PONG_TITLE "Pong 1.0v"
+#define PONG_FPS 30
 
 
 //----------------------------------------------------------------------------------
