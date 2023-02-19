@@ -63,7 +63,7 @@ void close_app(App_t *const *ptr)
         TraceLog(LOG_INFO, "App_t pointer destroyed.");
 #endif
     }
-
+    CloseAudioDevice();
     CloseWindow();
 }
 
@@ -73,7 +73,7 @@ void close_app(App_t *const *ptr)
 static void _init_app(App_t *const app)
 {
     InitWindow(PONG_WIDTH, PONG_HEIGHT, PONG_TITLE);
-
+    InitAudioDevice();
     // Load screens.
     app->screens = MemAlloc(sizeof(Screen_t *));
     app->screenIndex = 0;

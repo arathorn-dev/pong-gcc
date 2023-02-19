@@ -10,9 +10,15 @@ typedef enum
     FONT_ATARI,
 } FontEnum_e;
 
+typedef enum
+{
+    SELECT_SOUND,
+} SoundEnum_e;
+
 PONG typedef struct
 {
     Font fonts[3];
+    Sound sound[1];
 } Package_t;
 
 #if defined(__cplusplus)

@@ -181,9 +181,15 @@ PONG static void _update_word(void)
 {
     if(IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP)) {
         option = Clamp(--option, 0, 2);
+        PlaySound(
+            $package->sound[SELECT_SOUND]
+        );
     }
     else if(IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) {
         option = Clamp(++option, 0, 2);
+        PlaySound(
+            $package->sound[SELECT_SOUND]
+        );
     };
     
     if (IsKeyPressed(KEY_ENTER)) {
@@ -211,7 +217,7 @@ PONG static void _draw_word(void)
 {
     // --
     DrawRectangle(
-        pongWord.position.x,
+        pongWord.position.x + 7.5,
         pongWord.position.y,
         pongWord.measure.x,
         10,
@@ -229,8 +235,8 @@ PONG static void _draw_word(void)
 
     // --
     DrawRectangle(
-        pongWord.position.x,
-        pongWord.position.y + pongWord.measure.y,
+        pongWord.position.x + 7.5,
+        12 + pongWord.position.y + pongWord.measure.y,
         pongWord.measure.x,
         10,
         PONG_COLOR_2
