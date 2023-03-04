@@ -28,9 +28,6 @@ else
 	CFLAGS += -g
 endif
 
-
-
-
 CFILES 		:= $(shell find $(SRCDIR)/ -type f -iname *.c)
 OBJFILES	:= $(patsubst %.c,%.o,$(patsubst $(SRCDIR)%,$(OBJDIR)%,$(CFILES)))
 SUBDIR		:= $(shell find $(SRCDIR)/ -type d)

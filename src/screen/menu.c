@@ -1,32 +1,23 @@
 #include "../includes/screen.h"
 #include "../includes/package.h"
+#include "../includes/utils.h"
 
 extern Package_t *$package;
 
-typedef struct {
-    const char *text;
-    float fontSize; 
-    Font * font;
-    Color color;
-    Vector2 position;
-    Vector2 measure;
-}Word_t;
 
 //----------------------------------------------------------------------------------
 // Static variables.
 //----------------------------------------------------------------------------------
-static const char *pongText = "pong";
-static const char *newGameText = "new game";
-static const char *optionText = "option";
-static const char *exitText = "exit";
-static const char *authorText = "Created by Arathorn 2023";
+static int32_t _option = 0;
 
-static int32_t option = 0;
-static Word_t pongWord = {0};
-static Word_t newGameWord = {0};
-static Word_t optionWord = {0};
-static Word_t exitWord = {0};
-static Word_t authorWord = {0};
+static const char *_optionList[3] = {
+    "new game",
+    "option",
+    "exit",
+};
+
+static const char *_titleText = "pong";
+static const char *_authorText = PONG_AUTHOR;
 
 //----------------------------------------------------------------------------------
 // Static functions definition.
@@ -34,9 +25,11 @@ static Word_t authorWord = {0};
 #if defined(__cplusplus)
 extern "C" {
 #endif
-    PONG static void _init_word(void);
     PONG static void _update(Screen_t *);
     PONG static void _draw(void);
+    PONG static void _draw_option_list(void);
+    PONG static void _draw_author(void);
+    PONG static void _draw_title(void);
 #if defined(__cplusplus)
 }
 #endif
@@ -57,7 +50,6 @@ PONG Screen_t *init_menu(void)
 #endif
     screen->type = MENU_SCREEN_E;
     screen->nextScreenType = UNKNOW_SCREEN_E;
-    _init_word();
     return screen;
 }
 
@@ -88,106 +80,24 @@ PONG void unload_menu(Screen_t **ptr)
 //----------------------------------------------------------------------------------
 // Static functions implementation.
 //----------------------------------------------------------------------------------
-PONG static void _init_word(void)
-{
-    //TODO: improve load method.
-    int32_t width = GetScreenWidth();
-    int32_t height = GetScreenHeight();
-    float heightDiff = height / 1.5;
-    // --
-    pongWord.text = pongText;
-    pongWord.font = &$package->fonts[FONT_ATARI];
-    pongWord.fontSize = pongWord.font->baseSize * 4;
-    pongWord.measure = MeasureTextEx(
-        (*pongWord.font),
-        pongWord.text,
-        pongWord.fontSize,
-        1
-    );
-    pongWord.position = (Vector2){
-        (width / 2) - pongWord.measure.x/2,
-        100
-    };
-    pongWord.color = PONG_COLOR_3;
-    // --
-    newGameWord.text = newGameText;
-    newGameWord.font = &$package->fonts[FONT_04B_03_E];
-    newGameWord.fontSize = newGameWord.font->baseSize;
-    newGameWord.measure = MeasureTextEx(
-        (*newGameWord.font),
-        newGameWord.text,
-        newGameWord.fontSize,
-        1
-    );
-    newGameWord.position = (Vector2){
-        (width / 2) - newGameWord.measure.x/2,
-        heightDiff
-    };
-    newGameWord.color = PONG_COLOR_3;
-    // --
-    optionWord.text = optionText;
-    optionWord.font = &$package->fonts[FONT_04B_03_E];
-    optionWord.fontSize = optionWord.font->baseSize;
-    optionWord.measure = MeasureTextEx(
-        (*optionWord.font),
-        optionWord.text,
-        optionWord.fontSize,
-        1
-    );
-    optionWord.position = (Vector2){
-        (width / 2) - optionWord.measure.x/2,
-        heightDiff + optionWord.measure.y
-    };
-    optionWord.color = PONG_COLOR_3;
-    // --
-    exitWord.text = exitText;
-    exitWord.font = &$package->fonts[FONT_04B_03_E];
-    exitWord.fontSize = exitWord.font->baseSize;
-    exitWord.measure = MeasureTextEx(
-        (*exitWord.font),
-        exitWord.text,    
-        exitWord.fontSize,
-        1
-    );
-    exitWord.position = (Vector2){
-        (width / 2) - exitWord.measure.x/2,
-        heightDiff + (exitWord.measure.y * 2),
-    };
-    exitWord.color = PONG_COLOR_3;
-    // --
-    authorWord.text = authorText;
-    authorWord.font = &$package->fonts[FONT_BM_GERMAR];
-    authorWord.fontSize = authorWord.font->baseSize / 2;
-    authorWord.measure = MeasureTextEx(
-        (*authorWord.font),
-        authorWord.text,    
-        authorWord.fontSize,
-        1
-    );
-    authorWord.position = (Vector2){
-        (width / 2) - authorWord.measure.x/2,
-        height - authorWord.measure.y,
-    };
-    authorWord.color = PONG_COLOR_3;
-}
 
 PONG static void _update(Screen_t *screen)
 {
     if(IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP)) {
-        option = Clamp(--option, 0, 2);
+        _option = Clamp(--_option, 0, 2);
         PlaySound(
             $package->sound[SELECT_SOUND]
         );
     }
     else if(IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) {
-        option = Clamp(++option, 0, 2);
+        _option = Clamp(++_option, 0, 2);
         PlaySound(
             $package->sound[SELECT_SOUND]
         );
     };
     
     if (IsKeyPressed(KEY_ENTER)) {
-        switch (option)
+        switch (_option)
         {
         case 0:
             TraceLog(LOG_INFO, "[GAME]");
@@ -209,67 +119,99 @@ PONG static void _update(Screen_t *screen)
 
 PONG static void _draw(void)
 {
+    _draw_title();
+    _draw_option_list();
+    _draw_author();
+}
+
+PONG static void _draw_option_list(void)
+{
+    int32_t width = GetScreenWidth();
+    int32_t height = GetScreenHeight();
+    height = height - (height / 3);
+    Font font = $package->fonts[FONT_04B_03_E];
+    for (size_t i=0; i < 3; ++i)
+    {
+        const char *text = _optionList[i];
+        int32_t fontSize = font.baseSize;
+        Vector2 position = {0};
+
+        position.x = (width / 2) - (MeasureText(text, fontSize) / 2); 
+        position.y = height + (i * fontSize);
+
+        DrawTextEx(
+            font,
+            text,
+            position,
+            fontSize,
+            1,
+            _option == i ? PONG_COLOR_3 : PONG_COLOR_2
+        );
+    }
+}
+
+PONG static void _draw_author(void)
+{
+    int32_t width = GetScreenWidth();
+    int32_t height = GetScreenHeight();
+    Font font = $package->fonts[FONT_BM_GERMAR];
+    Vector2 position = {0};
+    float fontSize = font.baseSize / 2;
+    Vector2 measure = MeasureTextEx(
+        font,
+        _authorText,
+        fontSize,
+        1
+    );
+    position.x = (width / 2) - (measure.x / 2);
+    position.y = height - measure.y;
+    DrawTextEx(
+        font,
+        _authorText,
+        position,
+        fontSize,
+        1,
+        PONG_COLOR_3
+    );
+}
+
+PONG static void _draw_title(void)
+{
+    int32_t width = GetScreenWidth();
+    Font font = $package->fonts[FONT_ATARI];
+    Vector2 position = {0};
+    float fontSize = font.baseSize * 4;
+    Vector2 measure = MeasureTextEx(
+        font,
+        _titleText,
+        fontSize,
+        1
+    );
+    position.x = (width / 2) - (measure.x / 2);
+    position.y = 100;
+
     // --
     DrawRectangle(
-        pongWord.position.x + 7.5,
-        pongWord.position.y,
-        pongWord.measure.x,
+        position.x + 7.5,
+        position.y,
+        measure.x,
+        10,
+        PONG_COLOR_2
+    );
+    DrawTextEx(
+        font,
+        _titleText,
+        position,
+        fontSize,
+        1,
+        PONG_COLOR_3
+    );
+    DrawRectangle(
+        position.x + 7.5,
+        12 + position.y + measure.y,
+        measure.x,
         10,
         PONG_COLOR_2
     );
     // --
-    DrawTextEx(
-        (*pongWord.font),
-        pongWord.text,
-        pongWord.position,
-        pongWord.fontSize,
-        1,
-        pongWord.color
-    );
-
-    // --
-    DrawRectangle(
-        pongWord.position.x + 7.5,
-        12 + pongWord.position.y + pongWord.measure.y,
-        pongWord.measure.x,
-        10,
-        PONG_COLOR_2
-    );
-    // --
-
-    DrawTextEx(
-        (*newGameWord.font),
-        newGameWord.text,
-        newGameWord.position,
-        newGameWord.fontSize,
-        1,
-        option == 0 ? newGameWord.color : PONG_COLOR_2
-    );
-    
-    DrawTextEx(
-        (*optionWord.font),
-        optionWord.text,
-        optionWord.position,
-        optionWord.fontSize,
-        1,
-        option == 1 ? optionWord.color : PONG_COLOR_2
-    );
-    
-     DrawTextEx(
-        (*exitWord.font),
-        exitWord.text,
-        exitWord.position,
-        exitWord.fontSize,
-        1,
-        option == 2 ? exitWord.color : PONG_COLOR_2
-    );
-
-    DrawTextEx(
-        (*authorWord.font),
-        authorWord.text,
-        authorWord.position,
-        authorWord.fontSize,
-        1,
-        authorWord.color
-    );
 }
