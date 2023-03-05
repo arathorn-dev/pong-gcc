@@ -3,13 +3,15 @@
 #include "../includes/package.h"
 
 extern Package_t *$package;
+extern Theme_t *$theme;
 
 //----------------------------------------------------------------------------------
 // Static variables.
 //----------------------------------------------------------------------------------
+#define _OPTION_SIZE 4
 
 static uint8_t _option;
-static const char *_optionList[4] = {
+static const char *_optionList[_OPTION_SIZE] = {
     "GBP-NSO color",
     "Rustic GB",
     "Mist GB",
@@ -49,6 +51,7 @@ PONG Screen_t *init_option(void)
 #endif
     screen->type = OPTION_SCREEN_E;
     screen->nextScreenType = UNKNOW_SCREEN_E;
+    _option = $theme->value;
     return screen;
 }
 
@@ -63,7 +66,7 @@ PONG void  update_option(Screen_t *const screen)
 
 PONG void draw_option(const Screen_t *const screen)
 {
-    ClearBackground(PONG_COLOR_1);
+    ClearBackground($theme->color[1]);
     _draw_option_list();
     _draw_author();
 }
@@ -89,17 +92,19 @@ PONG static void _update_text(void)
 {
     if (IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP))
     {
-        _option = Clamp(--_option, 0, 4 - 1);
+        _option = Clamp(--_option, 0, _OPTION_SIZE - 1);
         PlaySound(
             $package->sound[SELECT_SOUND]
         );
+        load_color_theme($theme, _option);
     }
     else if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN))
     {
-        _option = Clamp(++_option, 0, 4 - 1);
+        _option = Clamp(++_option, 0, _OPTION_SIZE - 1);
         PlaySound(
             $package->sound[SELECT_SOUND]
         );
+        load_color_theme($theme, _option);
     }
 }
 
@@ -111,7 +116,7 @@ PONG static void _draw_option_list(void)
 
     // Draw options.
     Font font = $package->fonts[FONT_04B_03_E];
-    for (size_t i=0; i < 4; ++i)
+    for (size_t i=0; i < _OPTION_SIZE; ++i)
     {
         const char *text = _optionList[i];
         int32_t fontSize = font.baseSize;
@@ -126,7 +131,7 @@ PONG static void _draw_option_list(void)
             position,
             fontSize,
             1,
-            _option == i ? PONG_COLOR_3 : PONG_COLOR_2
+            _option == i ? $theme->color[3] : $theme->color[2]
         );
     }
 }
@@ -153,7 +158,7 @@ PONG static void _draw_author(void)
         position,
         fontSize,
         1,
-        PONG_COLOR_3
+        $theme->color[3]
     );
 }
 

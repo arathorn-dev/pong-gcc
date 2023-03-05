@@ -3,6 +3,7 @@
 #include "../includes/utils.h"
 
 extern Package_t *$package;
+extern Theme_t *$theme;
 
 
 //----------------------------------------------------------------------------------
@@ -45,9 +46,9 @@ PONG Screen_t *init_menu(void)
         TraceLog(LOG_ERROR, "Couldn't initialize Screen_t pointer [MENU].");
         return NULL;
     }
-#if defined(PONG_DEBUG)
-    TraceLog(LOG_INFO, "[MENU]Screen_t structure created.");
-#endif
+    #if defined(PONG_DEBUG)
+        TraceLog(LOG_INFO, "Screen_t structure created.");
+    #endif
     screen->type = MENU_SCREEN_E;
     screen->nextScreenType = UNKNOW_SCREEN_E;
     return screen;
@@ -60,7 +61,7 @@ PONG void update_menu(Screen_t *const screen)
 
 PONG void draw_menu(const Screen_t *const screen)
 {
-    ClearBackground(PONG_COLOR_1);
+    ClearBackground($theme->color[1]);
     _draw();
 }
 
@@ -70,9 +71,9 @@ PONG void unload_menu(Screen_t **ptr)
     {
         MemFree((*ptr));
         (*ptr) = NULL;
-#if defined(PONG_DEBUG)
-        TraceLog(LOG_INFO, "[MENU] Screen_t pointer destroyed.");
-#endif
+        #if defined(PONG_DEBUG)
+            TraceLog(LOG_INFO, "[MENU] Screen_t pointer destroyed.");
+        #endif
     }
 }
 
@@ -80,7 +81,6 @@ PONG void unload_menu(Screen_t **ptr)
 //----------------------------------------------------------------------------------
 // Static functions implementation.
 //----------------------------------------------------------------------------------
-
 PONG static void _update(Screen_t *screen)
 {
     if(IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP)) {
@@ -145,7 +145,7 @@ PONG static void _draw_option_list(void)
             position,
             fontSize,
             1,
-            _option == i ? PONG_COLOR_3 : PONG_COLOR_2
+            _option == i ? $theme->color[3] : $theme->color[2]
         );
     }
 }
@@ -171,7 +171,7 @@ PONG static void _draw_author(void)
         position,
         fontSize,
         1,
-        PONG_COLOR_3
+        $theme->color[3]
     );
 }
 
@@ -196,7 +196,7 @@ PONG static void _draw_title(void)
         position.y,
         measure.x,
         10,
-        PONG_COLOR_2
+        $theme->color[2]
     );
     DrawTextEx(
         font,
@@ -204,14 +204,14 @@ PONG static void _draw_title(void)
         position,
         fontSize,
         1,
-        PONG_COLOR_3
+        $theme->color[3]
     );
     DrawRectangle(
         position.x + 7.5,
         12 + position.y + measure.y,
         measure.x,
         10,
-        PONG_COLOR_2
+        $theme->color[2]
     );
     // --
 }

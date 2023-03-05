@@ -1,4 +1,7 @@
 #include "../includes/screen.h"
+#include "../includes/theme.h"
+
+extern Theme_t *$theme;
 
 PONG Screen_t *init_game(void)
 {
@@ -26,7 +29,7 @@ PONG void  update_game(Screen_t *const screen)
 
 PONG void draw_game(const Screen_t *const screen)
 {
-    ClearBackground(SKYBLUE);
+    ClearBackground($theme->color[1]);
 }
 
 PONG void unload_game(Screen_t ** ptr)

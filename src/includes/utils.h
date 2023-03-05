@@ -1,6 +1,7 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 #include "../config.h"
+#include "theme.h"
 
 //----------------------------------------------------------------------------------
 // struct List.

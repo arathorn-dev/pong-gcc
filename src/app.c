@@ -1,11 +1,14 @@
+#include <string.h>
+#include <stdio.h>
 #include "includes/app.h"
 #include "includes/package.h"
+#include "includes/theme.h"
 
 //----------------------------------------------------------------------------------
 // Shared variables definition(global)
 //----------------------------------------------------------------------------------
 Package_t *$package = NULL;
-
+Theme_t *$theme = NULL;
 
 //----------------------------------------------------------------------------------
 // Local variables definition.
@@ -32,6 +35,10 @@ extern "C"
     PONG static void _transitionToScreen(App_t *const, ScreenType_e screen);
     PONG static void _updateTransition(App_t *const app);
     PONG static void _drawTransition(void);
+
+    // Read & write data.
+    PONG static bool _read_file_init(void);
+    PONG static bool _write_file_init(void);
 #if defined(__cplusplus)
 }
 #endif
@@ -41,18 +48,22 @@ extern "C"
 //----------------------------------------------------------------------------------
 App_t *const create_app(void)
 {
-    App_t *app = MemAlloc(sizeof(App_t));
-    if (app == NULL)
+    App_t *app = NULL;
+    if (_read_file_init())
     {
-        TraceLog(LOG_ERROR, "Couldn't initialize App_t pointer.");
-        return NULL;
+        app = MemAlloc(sizeof(App_t));
+        if (app == NULL)
+        {
+            TraceLog(LOG_ERROR, "Couldn't initialize App_t pointer.");
+            return NULL;
+        }
+
+        #if defined(PONG_DEBUG)
+            TraceLog(LOG_INFO, "App_t structure created.");
+        #endif
+
+        _init_app(app);
     }
-
-#if defined(PONG_DEBUG)
-    TraceLog(LOG_INFO, "App_t structure created.");
-#endif
-
-    _init_app(app);
     return app;
 }
 //
@@ -70,12 +81,14 @@ void close_app(App_t *const *ptr)
     if (*ptr != NULL)
     {
         _close_screen_app((*ptr));
+        _write_file_init();
         close_package(&$package);
+        unload_theme(&$theme);
         MemFree(*ptr);
         ptr = NULL;
-#if defined(PONG_DEBUG)
-        TraceLog(LOG_INFO, "App_t pointer destroyed.");
-#endif
+        #if defined(PONG_DEBUG)
+            TraceLog(LOG_INFO, "App_t pointer destroyed.");
+        #endif
     }
     CloseAudioDevice();
     CloseWindow();
@@ -249,4 +262,58 @@ PONG static void _drawTransition(void)
         GetScreenHeight(),
         Fade(BLACK, alpha)     
     );
+}
+
+PONG static bool _read_file_init(void)
+{
+    int32_t result = false;
+    if(FileExists(PONG_INIT_FILE))
+    {
+        char *data = LoadFileText(PONG_INIT_FILE);
+        char *aux = data;
+        char *nextLine;
+
+        char *line = strtok_s(aux, "\n", &nextLine);
+        while (line != NULL)
+        {
+            int32_t index = TextFindIndex(line, PONG_TOKEN_THEME);
+            if (index >= 0)
+            {
+                char *nextToken;
+                char *auxToken = line;
+                char *token = strtok_s(auxToken, PONG_TOKEN_EQUAL, &nextToken);
+                if (token != NULL) 
+                {
+                    int32_t value = TextToInteger(nextToken);
+                    $theme = init_theme(value);   
+                    if ($theme != NULL) {
+                        result = true;
+                    }                   
+                }
+            }
+            line = strtok_s(NULL, "\n", &nextLine);
+        }
+        UnloadFileText(data);
+    }
+    return result;
+}
+
+PONG static bool _write_file_init(void)
+{   
+    int32_t value = $theme->value;
+    char strValue[2];
+    sprintf(strValue, "%d", value);
+
+    char *base = "[CONFIG]\nTHEME=";
+    size_t length = TextLength(base);
+    char *data = MemAlloc(sizeof(char) * length + 2);
+    memcpy(data, base, length + 1);
+    memset(data + length, *strValue, sizeof(char));
+
+    SaveFileText(PONG_INIT_FILE, data);
+
+    MemFree(data);
+    data = NULL;
+
+    return true;
 }
