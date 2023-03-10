@@ -99,7 +99,7 @@ void close_app(App_t *const *ptr)
 //----------------------------------------------------------------------------------
 static void _init_app(App_t *const app)
 {
-    InitWindow(PONG_WIDTH, PONG_HEIGHT, PONG_TITLE);
+    InitWindow(PONG_SCREEN_WIDTH, PONG_SCREEN_HEIGHT, PONG_SCREEN_TITLE);
     InitAudioDevice();
     HideCursor();
     SetTargetFPS(PONG_FPS);
