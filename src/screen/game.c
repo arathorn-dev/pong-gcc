@@ -60,18 +60,21 @@ PONG Screen_t *init_game(void)
 PONG void  update_game(Screen_t *const screen)
 {
 
-    if (IsKeyPressed(KEY_BACKSPACE)) 
+    if (IsKeyPressed(KEY_BACKSPACE))
+    {
         screen->nextScreenType = MENU_SCREEN_E;
-    
-    if (IsKeyPressed(KEY_P))
+    }
+    else if (IsKeyPressed(KEY_P))
+    {
         pause = !pause;
+    }
 
     if (!pause)
     {
         update_player(player);
-        update_ball(ball, player->transform);
     }
-
+    
+    update_ball(ball, player->transform);
     if (check_collision_ball())
     {
         reset = true;

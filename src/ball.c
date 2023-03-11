@@ -2,6 +2,8 @@
 #include "includes/theme.h"
 #include "includes/raymath.h"
 #include "includes/package.h"
+#include "includes/particle.h"
+
 
 extern Package_t *$package;
 extern Theme_t *$theme;
@@ -45,34 +47,50 @@ PONG Ball_t *init_ball(void)
         TraceLog(LOG_INFO, "Ball_t* structure created.");
     #endif
 
+    init_particle();
     reset_ball(ball);
     return ball;
 }
 
 PONG void update_ball(Ball_t *ball, Rectangle rect)
 {
-    Vector2 position = (Vector2){0};
-    position.x = ball->transform.x;
-    position.y = ball->transform.y;
+    if (isScreenCollision) {
+        update_particle();
+    }
+    else
+    {
+        Vector2 position = (Vector2){0};
+        position.x = ball->transform.x;
+        position.y = ball->transform.y;
 
-    position.x += cosf(DEG2RAD * ball->angle) * SPEED * dirX;
-    position.y += sinf(DEG2RAD * ball->angle) * SPEED * dirY;
+        position.x += cosf(DEG2RAD * ball->angle) * SPEED * dirX;
+        position.y += sinf(DEG2RAD * ball->angle) * SPEED * dirY;
 
-    position = _check_collision(ball, position, rect);
+        position = _check_collision(ball, position, rect);
 
-    ball->transform.x = position.x;
-    ball->transform.y = position.y;
+        ball->transform.x = position.x;
+        ball->transform.y = position.y;
+    } 
+
 }
 
 PONG void draw_ball(const Ball_t *const ball)
 {
-    DrawRectangleRec(ball->transform, ball->color);
+    if (isScreenCollision) 
+    {
+        draw_particle((Vector2){ball->transform.x, ball->transform.y});
+    }
+    else
+    {
+        DrawRectangleRec(ball->transform, ball->color);
+    }
 }
 
 PONG void unload_ball(Ball_t **ptr)
 {
     if (*ptr != NULL)
     {
+        unload_particle();
         MemFree(*ptr);
         (*ptr) = NULL;
         #if defined(PONG_DEBUG)
@@ -83,6 +101,7 @@ PONG void unload_ball(Ball_t **ptr)
 
 PONG void reset_ball(Ball_t *const ball)
 {
+    isScreenCollision = false;
     dirX = GetRandomValue(0, 1) ? -1 : 1;
     dirY = 1;
 
@@ -94,6 +113,8 @@ PONG void reset_ball(Ball_t *const ball)
 
     ball->color = $theme->color[2];
     ball->angle = 0.0f;
+
+    reset_particle();
 }
 
 PONG bool check_collision_ball(void)
@@ -106,7 +127,6 @@ PONG bool check_collision_ball(void)
 //----------------------------------------------------------------------------------
 static Vector2 _check_collision(Ball_t *const ball, Vector2 position, Rectangle rect)
 {
-    isScreenCollision = false;
     int32_t screenWidth = GetScreenWidth(); 
     int32_t screenHeight = GetScreenHeight();
 
