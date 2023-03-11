@@ -105,7 +105,7 @@ static void _init_app(App_t *const app)
     SetTargetFPS(PONG_FPS);
     // Load screen.
     $package = create_package();
-    SetSoundVolume($package->sound[0], PONG_VOLUME);
+    SetSoundVolume($package->sound[SELECT_SOUND], PONG_VOLUME);
     app->currentScreen = init_menu();
     app->isRunning = true;
 }

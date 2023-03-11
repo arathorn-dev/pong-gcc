@@ -65,6 +65,7 @@ PONG static void _unload_fonts(Package_t *const package)
 PONG static void _load_sounds(Package_t *const package) 
 {
     package->sound[SELECT_SOUND] = LoadSound("data/sounds/select.wav");
+    package->sound[EXPLOSION_SOUND] = LoadSound("data/sounds/explosion.wav");
 }
 PONG static void _unload_sounds(Package_t *const package) 
 {

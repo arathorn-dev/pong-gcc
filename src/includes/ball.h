@@ -18,6 +18,9 @@ extern "C" {
     PONG void draw_ball(const Ball_t *const);
     PONG void unload_ball(Ball_t **);
 
+    PONG bool check_collision_ball(void);
+    PONG void reset_ball(Ball_t *const);
+
 #if defined(__cplusplus)
 }
 #endif

@@ -13,12 +13,13 @@ typedef enum
 typedef enum
 {
     SELECT_SOUND,
+    EXPLOSION_SOUND,
 } SoundEnum_e;
 
 PONG typedef struct
 {
     Font fonts[3];
-    Sound sound[1];
+    Sound sound[2];
 } Package_t;
 
 #if defined(__cplusplus)
