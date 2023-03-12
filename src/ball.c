@@ -24,7 +24,12 @@ static bool isScreenCollision = false;
 extern "C" {
 #endif
 
-PONG static Vector2 _check_collision(Ball_t *const ball, Vector2 position, Rectangle rect);
+PONG static Vector2 _check_collision(
+    Ball_t *const ball,
+    Vector2 position,
+    Rectangle rect0,
+    Rectangle rect1
+    );
 
 #if defined(__cplusplus)
 }
@@ -52,7 +57,7 @@ PONG Ball_t *init_ball(void)
     return ball;
 }
 
-PONG void update_ball(Ball_t *ball, Rectangle rect)
+PONG void update_ball(Ball_t *ball, Rectangle rect0, Rectangle rect1)
 {
     if (isScreenCollision) {
         update_particle();
@@ -66,7 +71,7 @@ PONG void update_ball(Ball_t *ball, Rectangle rect)
         position.x += cosf(DEG2RAD * ball->angle) * SPEED * dirX;
         position.y += sinf(DEG2RAD * ball->angle) * SPEED * dirY;
 
-        position = _check_collision(ball, position, rect);
+        position = _check_collision(ball, position, rect0, rect1);
 
         ball->transform.x = position.x;
         ball->transform.y = position.y;
@@ -125,7 +130,7 @@ PONG bool check_collision_ball(void)
 //----------------------------------------------------------------------------------
 // Static functions implementation.
 //----------------------------------------------------------------------------------
-static Vector2 _check_collision(Ball_t *const ball, Vector2 position, Rectangle rect)
+static Vector2 _check_collision(Ball_t *const ball, Vector2 position, Rectangle rect0, Rectangle rect1)
 {
     int32_t screenWidth = GetScreenWidth(); 
     int32_t screenHeight = GetScreenHeight();
@@ -136,11 +141,12 @@ static Vector2 _check_collision(Ball_t *const ball, Vector2 position, Rectangle 
         ball->transform.width,
         ball->transform.height
     };
-    bool isPaletteCollision = CheckCollisionRecs(rectBall, rect);
+    bool isPaletteCollision0 = CheckCollisionRecs(rectBall, rect0);
+    bool isPaletteCollision1 = CheckCollisionRecs(rectBall, rect1);
     bool isHorizontalCollision = position.x < 0 || (position.x + ball->transform.width) > screenWidth;
     bool isVerticalCollision = position.y < 0 || (position.y + ball->transform.width) > screenHeight;
 
-    if (isPaletteCollision) {
+    if (isPaletteCollision0 || isPaletteCollision1) {
         dirX *= -1;
         ball->angle = GetRandomValue(30, 60);
         PlaySound($package->sound[SELECT_SOUND]);

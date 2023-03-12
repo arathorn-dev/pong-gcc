@@ -10,12 +10,12 @@ PONG Palette_t *init_player(void)
     Palette_t *player = MemAlloc(sizeof(Palette_t));
     if (player == NULL) 
     {   
-        TraceLog(LOG_ERROR, "Couldn't initialize Palette_t pointer.");
+        TraceLog(LOG_ERROR, "[Player] Couldn't initialize Palette_t pointer.");
         return NULL;
     }
 
     #if defined(PONG_DEBUG)
-        TraceLog(LOG_INFO, "Palette_t structure created.");
+        TraceLog(LOG_INFO, "[Player] Palette_t structure created.");
     #endif
 
     player->transform = (Rectangle){0};
@@ -59,7 +59,7 @@ PONG void unload_player(Palette_t **ptr)
         MemFree(*ptr);
         (*ptr) = NULL;
         #if defined(PONG_DEBUG)
-            TraceLog(LOG_INFO, "Player_t pointer destroyed.");
+            TraceLog(LOG_INFO, "[Player] Palette_t pointer destroyed.");
         #endif
     }
 }

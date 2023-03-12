@@ -17,6 +17,11 @@ extern "C" {
     PONG void draw_player(const Palette_t *const);
     PONG void unload_player(Palette_t **);
 
+    PONG Palette_t *init_enemy(void);
+    PONG void update_enemy(Palette_t *const, Rectangle);
+    PONG void draw_enemy(const Palette_t *const);
+    PONG void unload_enemy(Palette_t **);
+
 
 #if defined(__cplusplus)
 }

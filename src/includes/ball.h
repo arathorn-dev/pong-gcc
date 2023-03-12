@@ -14,7 +14,7 @@ extern "C" {
 #endif
 
     PONG Ball_t *init_ball(void);
-    PONG void update_ball(Ball_t *, Rectangle);
+    PONG void update_ball(Ball_t *, Rectangle, Rectangle);
     PONG void draw_ball(const Ball_t *const);
     PONG void unload_ball(Ball_t **);
 

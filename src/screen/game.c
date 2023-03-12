@@ -11,6 +11,7 @@ extern Package_t *$package;
 // Static variables.
 //----------------------------------------------------------------------------------
 static Palette_t *player = NULL;
+static Palette_t *enemy = NULL;
 static Ball_t *ball = NULL;
 
 static float counter = 3.0f;
@@ -25,6 +26,7 @@ static bool reset = false;
 extern "C" {
 #endif
 PONG static void _draw_counter(void);
+PONG static void _draw_line(void);
 #if defined(__cplusplus)
 }
 #endif
@@ -52,6 +54,7 @@ PONG Screen_t *init_game(void)
     screen->nextScreenType = UNKNOW_SCREEN_E;
 
     player = init_player();
+    enemy = init_enemy();
     ball = init_ball();
 
     return screen;
@@ -72,9 +75,14 @@ PONG void  update_game(Screen_t *const screen)
     if (!pause)
     {
         update_player(player);
+        update_enemy(enemy, ball->transform);
     }
     
-    update_ball(ball, player->transform);
+    update_ball(
+        ball,
+        player->transform,
+        enemy->transform
+    );
     if (check_collision_ball())
     {
         reset = true;
@@ -95,7 +103,9 @@ PONG void  update_game(Screen_t *const screen)
 PONG void draw_game(const Screen_t *const screen)
 {
     ClearBackground($theme->color[1]);
+    _draw_line();
     draw_player(player);
+    draw_enemy(enemy);
     draw_ball(ball);
 
     if (reset)
@@ -107,6 +117,7 @@ PONG void unload_game(Screen_t ** ptr)
     if ((*ptr) != NULL)
     {
         unload_player(&player);
+        unload_enemy(&enemy);
         unload_ball(&ball);
 
         MemFree((*ptr));
@@ -123,13 +134,27 @@ PONG void unload_game(Screen_t ** ptr)
 static void _draw_counter(void)
 {
     const char *text = TextFormat("%1.0f", ceilf(counter));
-    Font font = $package->fonts[FONT_ATARI];
+    Font font = $package->fonts[FONT_BM_GERMAR];
+    int32_t fontSize = font.baseSize * 2;
+    Vector2 measure = MeasureTextEx(font, text, fontSize, 1);
 
     DrawText(
         text,
         GetScreenWidth() / 2,
-        GetScreenHeight() / 2,
-        font.baseSize,
+        GetScreenHeight() / 2 - (measure.y / 2),
+        fontSize,
         $theme->color[3]
+    );
+}
+
+PONG static void _draw_line(void)
+{
+    int32_t width = GetScreenWidth() / 2;
+    DrawRectangle(
+        width,
+        0,
+        5,
+        GetScreenHeight(),
+        $theme->color[0] 
     );
 }
