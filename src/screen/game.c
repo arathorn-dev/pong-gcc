@@ -182,14 +182,14 @@ PONG static void _init_score(void)
 PONG static void _draw_counter(void)
 {
     const char *text = TextFormat("%1.0f", ceilf(counter));
-    Font font = $package->fonts[FONT_BM_GERMAR];
-    int32_t fontSize = font.baseSize * 2;
+    Font font = $package->fonts[FONT_04B_03_E];
+    int32_t fontSize = font.baseSize * 3;
     Vector2 measure = MeasureTextEx(font, text, fontSize, 1);
 
     DrawText(
         text,
-        GetScreenWidth() / 2,
-        GetScreenHeight() / 2 - (measure.y / 2),
+        GetScreenWidth() / 2 - (measure.x / 3),
+        GetScreenHeight() / 2 - (measure.y / 3),
         fontSize,
         $theme->color[3]);
 }

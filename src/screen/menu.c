@@ -16,7 +16,7 @@ static const char *_optionList[3] = {
     "exit",
 };
 
-static const char *_titleText = "pong";
+static const char *_titleText = "PONG";
 static const char *_authorText = PONG_AUTHOR;
 
 //----------------------------------------------------------------------------------
@@ -136,7 +136,8 @@ PONG static void _draw_option_list(void)
         int32_t fontSize = font.baseSize;
         Vector2 position = {0};
 
-        position.x = (width / 2) - (MeasureText(text, fontSize) / 2);
+        int32_t measure = MeasureText(text, fontSize);
+        position.x = (width / 2) - (measure / 2);
         position.y = height + (i * fontSize);
 
         DrawTextEx(
@@ -153,7 +154,7 @@ PONG static void _draw_author(void)
 {
     int32_t width = GetScreenWidth();
     int32_t height = GetScreenHeight();
-    Font font = $package->fonts[FONT_BM_GERMAR];
+    Font font = $package->fonts[FONT_04B_03_E];
     Vector2 position = {0};
     float fontSize = font.baseSize / 2;
     Vector2 measure = MeasureTextEx(
@@ -161,7 +162,7 @@ PONG static void _draw_author(void)
         _authorText,
         fontSize,
         1);
-    position.x = (width / 2) - (measure.x / 2);
+    position.x = (width / 2) - (measure.x / 2.2);
     position.y = height - measure.y;
     DrawTextEx(
         font,
@@ -169,13 +170,13 @@ PONG static void _draw_author(void)
         position,
         fontSize,
         1,
-        $theme->color[0]);
+        $theme->color[1]);
 }
 
 PONG static void _draw_title(void)
 {
     int32_t width = GetScreenWidth();
-    Font font = $package->fonts[FONT_ATARI];
+    Font font = $package->fonts[FONT_04B_03_E];
     Vector2 position = {0};
     float fontSize = font.baseSize * 4;
     Vector2 measure = MeasureTextEx(
@@ -183,16 +184,35 @@ PONG static void _draw_title(void)
         _titleText,
         fontSize,
         1);
+
     position.x = (width / 2) - (measure.x / 2);
     position.y = 100;
 
-    // --
     DrawRectangle(
-        position.x + 7.5,
-        position.y,
-        measure.x,
-        10,
+        0,
+        position.y - 6 + (measure.y / 2),
+        position.x - font.baseSize,
+        8.0,
+        $theme->color[0]
+
+    );
+    DrawRectangle(
+        position.x - font.baseSize + (measure.x - 12 + font.baseSize * 2),
+        position.y - 6 + (measure.y / 2),
+        position.x - font.baseSize + 16,
+        8.0,
         $theme->color[0]);
+
+    DrawRectangleLinesEx(
+        (Rectangle){
+            position.x - font.baseSize,
+            position.y - 6,
+            measure.x - 12 + font.baseSize * 2,
+            measure.y,
+        },
+        8.0f,
+        $theme->color[0]);
+
     DrawTextEx(
         font,
         _titleText,
@@ -200,11 +220,4 @@ PONG static void _draw_title(void)
         fontSize,
         1,
         $theme->color[3]);
-    DrawRectangle(
-        position.x + 7.5,
-        12 + position.y + measure.y,
-        measure.x,
-        10,
-        $theme->color[0]);
-    // --
 }

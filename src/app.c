@@ -14,11 +14,13 @@ Theme_t *$theme = NULL;
 // Local variables definition.
 //----------------------------------------------------------------------------------
 static float alpha = 0.0f;
+
 static bool isTransition = false;
 static bool isFadeOut;
+static bool showFPS = false;
+
 static ScreenType_e fromScreen = UNKNOW_SCREEN_E;
 static ScreenType_e toScreen = UNKNOW_SCREEN_E;
-
 
 //----------------------------------------------------------------------------------
 // Local functions declaration.
@@ -58,9 +60,9 @@ App_t *const create_app(void)
             return NULL;
         }
 
-        #if defined(PONG_DEBUG)
-            TraceLog(LOG_INFO, "App_t structure created.");
-        #endif
+#if defined(PONG_DEBUG)
+        TraceLog(LOG_INFO, "App_t structure created.");
+#endif
 
         _init_app(app);
     }
@@ -86,9 +88,9 @@ void close_app(App_t *const *ptr)
         unload_theme(&$theme);
         MemFree(*ptr);
         ptr = NULL;
-        #if defined(PONG_DEBUG)
-            TraceLog(LOG_INFO, "App_t pointer destroyed.");
-        #endif
+#if defined(PONG_DEBUG)
+        TraceLog(LOG_INFO, "App_t pointer destroyed.");
+#endif
     }
     CloseAudioDevice();
     CloseWindow();
@@ -112,34 +114,43 @@ static void _init_app(App_t *const app)
 //
 static void _update_app(App_t *app)
 {
+    if (IsKeyPressed(KEY_F1))
+    {
+        showFPS = !showFPS;
+    }
+
     Screen_t *const screen = app->currentScreen;
-    if (isTransition) {
+    if (isTransition)
+    {
         _updateTransition(app);
-    } else {
+    }
+    else
+    {
         switch (screen->type)
         {
         case MENU_SCREEN_E:
             update_menu(screen);
-            if (screen->nextScreenType != UNKNOW_SCREEN_E) 
+            if (screen->nextScreenType != UNKNOW_SCREEN_E)
             {
                 if (screen->nextScreenType == EXIT_SCREEN_E)
-                 {
+                {
                     app->isRunning = false;
-                 } else
-                 {
+                }
+                else
+                {
                     _transitionToScreen(app, screen->nextScreenType);
-                 }
+                }
             }
-                
+
             break;
         case OPTION_SCREEN_E:
             update_option(screen);
-            if (screen->nextScreenType != UNKNOW_SCREEN_E) 
+            if (screen->nextScreenType != UNKNOW_SCREEN_E)
                 _transitionToScreen(app, screen->nextScreenType);
             break;
         case GAME_SCREEN_E:
             update_game(screen);
-            if (screen->nextScreenType != UNKNOW_SCREEN_E) 
+            if (screen->nextScreenType != UNKNOW_SCREEN_E)
                 _transitionToScreen(app, screen->nextScreenType);
             break;
         default:
@@ -168,7 +179,14 @@ static void _draw_app(const App_t *const app)
         break;
     }
 
-    if (isTransition) _drawTransition();
+    if (isTransition)
+        _drawTransition();
+
+    if (showFPS)
+    {
+        DrawFPS(0, 0);
+    }
+
     EndDrawing();
 }
 
@@ -184,11 +202,12 @@ static void _close_screen_app(App_t *const app)
             break;
         case OPTION_SCREEN_E:
             unload_option(&screen);
-        break;
+            break;
         case GAME_SCREEN_E:
             unload_game(&screen);
-        break;
-        default:break;
+            break;
+        default:
+            break;
         }
     }
 }
@@ -207,7 +226,7 @@ PONG static void _updateTransition(App_t *const app)
     if (isFadeOut)
     {
         alpha -= 0.05f;
-        if (alpha < -0.01f) 
+        if (alpha < -0.01f)
         {
             alpha = 0.0f;
             isTransition = false;
@@ -215,41 +234,44 @@ PONG static void _updateTransition(App_t *const app)
             fromScreen = UNKNOW_SCREEN_E;
             toScreen = UNKNOW_SCREEN_E;
         }
-    } else 
+    }
+    else
     {
         alpha += 0.08f;
-        if (alpha > 1.01f) 
+        if (alpha > 1.01f)
         {
-            switch(fromScreen)
+            switch (fromScreen)
             {
-                case MENU_SCREEN_E:
-                    unload_menu(&app->currentScreen);
-                    break;
-                case OPTION_SCREEN_E:
-                    unload_option(&app->currentScreen);
-                    break;
-                case GAME_SCREEN_E:
-                    unload_game(&app->currentScreen);
-                    break;
-                default: break;
+            case MENU_SCREEN_E:
+                unload_menu(&app->currentScreen);
+                break;
+            case OPTION_SCREEN_E:
+                unload_option(&app->currentScreen);
+                break;
+            case GAME_SCREEN_E:
+                unload_game(&app->currentScreen);
+                break;
+            default:
+                break;
             }
 
-            switch(toScreen)
+            switch (toScreen)
             {
-                case MENU_SCREEN_E:
-                    app->currentScreen = init_menu();
-                    break;
-                case OPTION_SCREEN_E:
-                    app->currentScreen = init_option();
-                    break;
-                case GAME_SCREEN_E:
-                    app->currentScreen = init_game();
-                    break;
-                default: break;
+            case MENU_SCREEN_E:
+                app->currentScreen = init_menu();
+                break;
+            case OPTION_SCREEN_E:
+                app->currentScreen = init_option();
+                break;
+            case GAME_SCREEN_E:
+                app->currentScreen = init_game();
+                break;
+            default:
+                break;
             }
 
             isFadeOut = true;
-        } 
+        }
     }
 }
 
@@ -260,14 +282,13 @@ PONG static void _drawTransition(void)
         0,
         GetScreenWidth(),
         GetScreenHeight(),
-        Fade(BLACK, alpha)     
-    );
+        Fade(BLACK, alpha));
 }
 
 PONG static bool _read_file_init(void)
 {
     int32_t result = false;
-    if(FileExists(PONG_INIT_FILE))
+    if (FileExists(PONG_INIT_FILE))
     {
         char *data = LoadFileText(PONG_INIT_FILE);
         char *aux = data;
@@ -282,13 +303,14 @@ PONG static bool _read_file_init(void)
                 char *nextToken;
                 char *auxToken = line;
                 char *token = strtok_s(auxToken, PONG_TOKEN_EQUAL, &nextToken);
-                if (token != NULL) 
+                if (token != NULL)
                 {
                     int32_t value = TextToInteger(nextToken);
-                    $theme = init_theme(value);   
-                    if ($theme != NULL) {
+                    $theme = init_theme(value);
+                    if ($theme != NULL)
+                    {
                         result = true;
-                    }                   
+                    }
                 }
             }
             line = strtok_s(NULL, "\n", &nextLine);
@@ -299,7 +321,7 @@ PONG static bool _read_file_init(void)
 }
 
 PONG static bool _write_file_init(void)
-{   
+{
     int32_t value = $theme->value;
     char strValue[2];
     sprintf(strValue, "%d", value);

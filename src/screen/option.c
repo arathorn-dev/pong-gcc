@@ -25,7 +25,8 @@ static const char *_authorText = PONG_AUTHOR;
 //----------------------------------------------------------------------------------
 
 #if defined(_cplusplus)
-extern "C" {
+extern "C"
+{
 #endif
     PONG static void _update_text(void);
     PONG static void _draw_option_list(void);
@@ -55,9 +56,9 @@ PONG Screen_t *init_option(void)
     return screen;
 }
 
-PONG void  update_option(Screen_t *const screen)
+PONG void update_option(Screen_t *const screen)
 {
-    if (IsKeyPressed(KEY_BACKSPACE)) 
+    if (IsKeyPressed(KEY_BACKSPACE))
     {
         screen->nextScreenType = MENU_SCREEN_E;
     }
@@ -66,7 +67,7 @@ PONG void  update_option(Screen_t *const screen)
 
 PONG void draw_option(const Screen_t *const screen)
 {
-    ClearBackground($theme->color[1]);
+    ClearBackground($theme->color[2]);
     _draw_option_list();
     _draw_author();
 }
@@ -94,16 +95,14 @@ PONG static void _update_text(void)
     {
         _option = Clamp(--_option, 0, _OPTION_SIZE - 1);
         PlaySound(
-            $package->sound[SELECT_SOUND]
-        );
+            $package->sound[SELECT_SOUND]);
         load_color_theme($theme, _option);
     }
     else if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN))
     {
         _option = Clamp(++_option, 0, _OPTION_SIZE - 1);
         PlaySound(
-            $package->sound[SELECT_SOUND]
-        );
+            $package->sound[SELECT_SOUND]);
         load_color_theme($theme, _option);
     }
 }
@@ -116,13 +115,13 @@ PONG static void _draw_option_list(void)
 
     // Draw options.
     Font font = $package->fonts[FONT_04B_03_E];
-    for (size_t i=0; i < _OPTION_SIZE; ++i)
+    for (size_t i = 0; i < _OPTION_SIZE; ++i)
     {
         const char *text = _optionList[i];
         int32_t fontSize = font.baseSize;
         Vector2 position = {0};
 
-        position.x = (width / 2) - (MeasureText(text, fontSize) / 2); 
+        position.x = (width / 2) - (MeasureText(text, fontSize) / 2);
         position.y = height + (i * fontSize);
 
         DrawTextEx(
@@ -131,8 +130,7 @@ PONG static void _draw_option_list(void)
             position,
             fontSize,
             1,
-            _option == i ? $theme->color[3] : $theme->color[2]
-        );
+            _option == i ? $theme->color[0] : $theme->color[1]);
     }
 }
 
@@ -141,16 +139,15 @@ PONG static void _draw_author(void)
     int32_t width = GetScreenWidth();
     int32_t height = GetScreenHeight();
     // Draw info author.
-    Font font = $package->fonts[FONT_BM_GERMAR];
+    Font font = $package->fonts[FONT_04B_03_E];
     Vector2 position = {0};
     float fontSize = font.baseSize / 2;
     Vector2 measure = MeasureTextEx(
         font,
         _authorText,
         fontSize,
-        1
-    );
-    position.x = (width / 2) - (measure.x / 2);
+        1);
+    position.x = (width / 2) - (measure.x / 2.2);
     position.y = height - measure.y;
     DrawTextEx(
         font,
@@ -158,8 +155,7 @@ PONG static void _draw_author(void)
         position,
         fontSize,
         1,
-        $theme->color[3]
-    );
+        $theme->color[1]);
 }
 
 PONG static void _reset(void)
