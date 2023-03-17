@@ -13,15 +13,15 @@ static float gravity = 3.0f;
 // Static functions definition.
 //----------------------------------------------------------------------------------
 #if defined(__cplusplus)
-extern "C" {
+extern "C"
+{
 #endif
 
-PONG void _init(void);
+    PONG void _init(void);
 
 #if defined(__cplusplus)
 }
 #endif
-
 
 //----------------------------------------------------------------------------------
 // Public functions.
@@ -38,14 +38,14 @@ PONG void update_particle(void)
     //     if (!particles[i].active)
     //     {
     //         particles[i].active = true;
-    //         particles[i].position.x = 0;  
+    //         particles[i].position.x = 0;
     //         particles[i].position.y = 0;
     //         particles[i].alpha = 1.0f;
     //         particles[i].rotation = GetRandomValue(0, 360);
     //         break;
     //     }
     // }
-    for(size_t i=0; i < PONG_MAX_PARTICLES; ++i)
+    for (size_t i = 0; i < PONG_MAX_PARTICLES; ++i)
     {
         if (particles[i].active)
         {
@@ -56,13 +56,13 @@ PONG void update_particle(void)
             if (particles[i].alpha < -2.0f)
                 particles[i].active = false;
             // particles[i].rotation += 2.0f;
-        }   
+        }
     }
 }
 
 PONG void draw_particle(Vector2 origin)
-{   
-    for(size_t i=0; i < PONG_MAX_PARTICLES; ++i)
+{
+    for (size_t i = 0; i < PONG_MAX_PARTICLES; ++i)
     {
         if (particles[i].active)
         {
@@ -75,14 +75,13 @@ PONG void draw_particle(Vector2 origin)
             };
             DrawRectangleRec(
                 rec,
-                Fade(particles[i].color, particles[i].alpha)
-            );
+                Fade(particles[i].color, particles[i].alpha));
             // DrawRectanglePro(
             //     rec,
             //     (Vector2){0, 0},
             //     rotation,
             //     Fade(particles[i].color, particles[i].alpha)
-            // ); 
+            // );
         }
     }
 }
@@ -102,11 +101,11 @@ PONG void unload_particle(void)
 //----------------------------------------------------------------------------------
 PONG void _init(void)
 {
-    for(size_t i=0; i < PONG_MAX_PARTICLES; ++i)
+    for (size_t i = 0; i < PONG_MAX_PARTICLES; ++i)
     {
-        particles[i].position.x = 0;  
+        particles[i].position.x = 0;
         particles[i].position.y = 0;
-        particles[i].color = $theme->color[2];
+        particles[i].color = $theme->color[0];
         particles[i].rotation = GetRandomValue(0, 360);
         particles[i].size = GetRandomValue(5, 20);
         particles[i].active = true;

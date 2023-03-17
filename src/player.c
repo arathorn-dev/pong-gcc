@@ -8,22 +8,22 @@ static float SPEED = 8.8;
 PONG Palette_t *init_player(void)
 {
     Palette_t *player = MemAlloc(sizeof(Palette_t));
-    if (player == NULL) 
-    {   
+    if (player == NULL)
+    {
         TraceLog(LOG_ERROR, "[Player] Couldn't initialize Palette_t pointer.");
         return NULL;
     }
 
-    #if defined(PONG_DEBUG)
-        TraceLog(LOG_INFO, "[Player] Palette_t structure created.");
-    #endif
+#if defined(PONG_DEBUG)
+    TraceLog(LOG_INFO, "[Player] Palette_t structure created.");
+#endif
 
     player->transform = (Rectangle){0};
-    player->transform.x = PONG_WIDTH;
+    player->transform.x = PONG_PALETTE_SPACE;
     player->transform.y = (GetScreenHeight() / 2) - (PONG_HEIGHT / 2);
     player->transform.width = PONG_WIDTH;
     player->transform.height = PONG_HEIGHT;
-    player->color = $theme->color[2];
+    player->color = $theme->color[1];
 
     return player;
 }
@@ -37,12 +37,12 @@ PONG void update_player(Palette_t *const player)
     if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))
     {
         positionY -= SPEED;
-        positionY = Clamp(positionY, 0, screenHeight);
+        positionY = Clamp(positionY, PONG_GUI_HEIGHT, screenHeight);
     }
     if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))
     {
         positionY += SPEED;
-        positionY = Clamp(positionY, 0, screenHeight - height);
+        positionY = Clamp(positionY, PONG_GUI_HEIGHT, screenHeight - height);
     }
     player->transform.y = positionY;
 }
@@ -58,8 +58,8 @@ PONG void unload_player(Palette_t **ptr)
     {
         MemFree(*ptr);
         (*ptr) = NULL;
-        #if defined(PONG_DEBUG)
-            TraceLog(LOG_INFO, "[Player] Palette_t pointer destroyed.");
-        #endif
+#if defined(PONG_DEBUG)
+        TraceLog(LOG_INFO, "[Player] Palette_t pointer destroyed.");
+#endif
     }
 }
