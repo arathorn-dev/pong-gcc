@@ -21,7 +21,7 @@
 //----------------------------------------------------------------------------------
 #define PONG_FPS 30
 #define PONG_VOLUME 0.2
-#define PONG_MAX_SCORE 10
+#define PONG_MAX_SCORE 2
 
 //----------------------------------------------------------------------------------
 // Config sizes.
@@ -31,6 +31,7 @@
 #define PONG_GUI_HEIGHT 50
 #define PONG_SCORE_SPACE 10.0f
 #define PONG_PALETTE_SPACE 0
+#define PONG_COUNTER_WINNER_PAGE 3.0f
 
 //----------------------------------------------------------------------------------
 // Config text.

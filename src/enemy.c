@@ -3,9 +3,14 @@
 
 extern Theme_t *$theme;
 
-// static float SPEED = 8.8;
-static float SPEED = 6.8;
+//----------------------------------------------------------------------------------
+// Static variables.
+//----------------------------------------------------------------------------------
+static float _SPEED = 6.8;
 
+//----------------------------------------------------------------------------------
+// Public functions.
+//----------------------------------------------------------------------------------
 PONG Palette_t *init_enemy(void)
 {
     Palette_t *enemy = MemAlloc(sizeof(Palette_t));
@@ -37,12 +42,12 @@ PONG void update_enemy(Palette_t *const enemy, Rectangle rect)
 
         if (position.y > rect.y)
         {
-            position.y += -SPEED;
+            position.y += -_SPEED;
             enemy->transform.y = Clamp(position.y, PONG_GUI_HEIGHT, GetScreenHeight());
         }
         else if (position.y + enemy->transform.height < rect.y)
         {
-            position.y += SPEED;
+            position.y += _SPEED;
             enemy->transform.y = Clamp(position.y, PONG_GUI_HEIGHT, GetScreenHeight() - enemy->transform.height);
         }
     }

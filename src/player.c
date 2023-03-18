@@ -3,7 +3,7 @@
 
 extern Theme_t *$theme;
 
-static float SPEED = 8.8;
+static float _SPEED = 8.8;
 
 PONG Palette_t *init_player(void)
 {
@@ -36,12 +36,12 @@ PONG void update_player(Palette_t *const player)
 
     if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))
     {
-        positionY -= SPEED;
+        positionY -= _SPEED;
         positionY = Clamp(positionY, PONG_GUI_HEIGHT, screenHeight);
     }
     if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))
     {
-        positionY += SPEED;
+        positionY += _SPEED;
         positionY = Clamp(positionY, PONG_GUI_HEIGHT, screenHeight - height);
     }
     player->transform.y = positionY;

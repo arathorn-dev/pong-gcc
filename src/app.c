@@ -10,6 +10,9 @@
 Package_t *$package = NULL;
 Theme_t *$theme = NULL;
 
+int32_t playerScore = 0;
+int32_t enemyScore = 0;
+
 //----------------------------------------------------------------------------------
 // Local variables definition.
 //----------------------------------------------------------------------------------
@@ -153,6 +156,11 @@ static void _update_app(App_t *app)
             if (screen->nextScreenType != UNKNOW_SCREEN_E)
                 _transitionToScreen(app, screen->nextScreenType);
             break;
+        case WINNER_SCREEN_E:
+            update_winner(screen);
+            if (screen->nextScreenType != UNKNOW_SCREEN_E)
+                _transitionToScreen(app, screen->nextScreenType);
+            break;
         default:
             break;
         }
@@ -174,6 +182,9 @@ static void _draw_app(const App_t *const app)
         break;
     case GAME_SCREEN_E:
         draw_game(screen);
+        break;
+    case WINNER_SCREEN_E:
+        draw_winner(screen);
         break;
     default:
         break;
@@ -205,6 +216,9 @@ static void _close_screen_app(App_t *const app)
             break;
         case GAME_SCREEN_E:
             unload_game(&screen);
+            break;
+        case WINNER_SCREEN_E:
+            unload_winner(&screen);
             break;
         default:
             break;
@@ -251,6 +265,9 @@ PONG static void _updateTransition(App_t *const app)
             case GAME_SCREEN_E:
                 unload_game(&app->currentScreen);
                 break;
+            case WINNER_SCREEN_E:
+                unload_winner(&app->currentScreen);
+                break;
             default:
                 break;
             }
@@ -265,6 +282,9 @@ PONG static void _updateTransition(App_t *const app)
                 break;
             case GAME_SCREEN_E:
                 app->currentScreen = init_game();
+                break;
+            case WINNER_SCREEN_E:
+                app->currentScreen = init_winner();
                 break;
             default:
                 break;

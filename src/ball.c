@@ -10,13 +10,13 @@ extern Theme_t *$theme;
 //----------------------------------------------------------------------------------
 // Static variables.
 //----------------------------------------------------------------------------------
-static int32_t dirX = 1;
-static int32_t dirY = 1;
+static int32_t _dirX = 1;
+static int32_t _dirY = 1;
 
-static float SPEED = 7.0f;
+static float _SPEED = 8.5f;
 
-static bool isCollisionEnable = true;
-static bool isScreenCollision = false;
+static bool _isCollisionEnable = true;
+static bool _isScreenCollision = false;
 
 //----------------------------------------------------------------------------------
 // Static functions definition.
@@ -59,7 +59,7 @@ PONG Ball_t *init_ball(void)
 
 PONG void update_ball(Ball_t *ball, Rectangle rect0, Rectangle rect1)
 {
-    if (isScreenCollision)
+    if (_isScreenCollision)
     {
         update_particle();
     }
@@ -69,15 +69,15 @@ PONG void update_ball(Ball_t *ball, Rectangle rect0, Rectangle rect1)
         position.x = ball->transform.x;
         position.y = ball->transform.y;
 
-        position.x += cosf(DEG2RAD * ball->angle) * SPEED * dirX;
-        position.y += sinf(DEG2RAD * ball->angle) * SPEED * dirY;
+        position.x += cosf(DEG2RAD * ball->angle) * _SPEED * _dirX;
+        position.y += sinf(DEG2RAD * ball->angle) * _SPEED * _dirY;
 
         position = _check_collision(ball, position, rect0, rect1);
 
-        if (!isCollisionEnable)
+        if (!_isCollisionEnable)
         {
             float middle = GetScreenWidth() / 2;
-            isCollisionEnable = (dirX > 0 && position.x > middle) || (dirX < 0 && position.x < middle);
+            _isCollisionEnable = (_dirX > 0 && position.x > middle) || (_dirX < 0 && position.x < middle);
         }
 
         ball->transform.x = position.x;
@@ -87,22 +87,13 @@ PONG void update_ball(Ball_t *ball, Rectangle rect0, Rectangle rect1)
 
 PONG void draw_ball(const Ball_t *const ball)
 {
-    if (isScreenCollision)
+    if (_isScreenCollision)
     {
         draw_particle((Vector2){ball->transform.x, ball->transform.y});
     }
     else
     {
         DrawRectangleRec(ball->transform, ball->color);
-        // if (isCollisionEnable)
-        // {
-        //     DrawRectangleLines(
-        //         ball->transform.x,
-        //         ball->transform.y,
-        //         ball->transform.width,
-        //         ball->transform.height,
-        //         GREEN);
-        // }
     }
 }
 
@@ -121,9 +112,9 @@ PONG void unload_ball(Ball_t **ptr)
 
 PONG void reset_ball(Ball_t *const ball)
 {
-    isScreenCollision = false;
-    dirX = GetRandomValue(0, 1) ? -1 : 1;
-    dirY = 1;
+    _isScreenCollision = false;
+    _dirX = GetRandomValue(0, 1) ? -1 : 1;
+    _dirY = 1;
 
     ball->transform = (Rectangle){0};
     ball->transform.x = (GetScreenWidth() / 2) - (PONG_WIDTH / 2);
@@ -139,7 +130,7 @@ PONG void reset_ball(Ball_t *const ball)
 
 PONG bool check_screen_collision_ball(void)
 {
-    return isScreenCollision;
+    return _isScreenCollision;
 }
 
 //----------------------------------------------------------------------------------
@@ -162,21 +153,21 @@ static Vector2 _check_collision(Ball_t *const ball, Vector2 position, Rectangle 
     bool isHorizontalCollision = position.x < 0 || (position.x + ball->transform.width) > screenWidth;
     bool isVerticalCollision = position.y < PONG_GUI_HEIGHT || (position.y + ball->transform.width) > screenHeight;
 
-    if (isCollisionEnable && (isPaletteCollision0 || isPaletteCollision1))
+    if (_isCollisionEnable && (isPaletteCollision0 || isPaletteCollision1))
     {
-        isCollisionEnable = false;
-        dirX *= -1;
+        _isCollisionEnable = false;
+        _dirX *= -1;
         ball->angle = GetRandomValue(30, 60);
         PlaySound($package->sound[SELECT_SOUND]);
     }
     else if (isHorizontalCollision)
     {
-        isScreenCollision = true;
+        _isScreenCollision = true;
         PlaySound($package->sound[EXPLOSION_SOUND]);
     }
     else if (isVerticalCollision)
     {
-        dirY *= -1;
+        _dirY *= -1;
         PlaySound($package->sound[SELECT_SOUND]);
     }
 

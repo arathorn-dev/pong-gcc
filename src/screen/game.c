@@ -7,20 +7,20 @@
 extern Theme_t *$theme;
 extern Package_t *$package;
 
+extern int32_t playerScore;
+extern int32_t enemyScore;
+
 //----------------------------------------------------------------------------------
 // Static variables.
 //----------------------------------------------------------------------------------
-static Palette_t *player = NULL;
-static Palette_t *enemy = NULL;
-static Ball_t *ball = NULL;
+static Palette_t *_player = NULL;
+static Palette_t *_enemy = NULL;
+static Ball_t *_ball = NULL;
 
-static bool pause = false;
-static bool reset = false;
+static bool _pause = false;
+static bool _reset = false;
 
-static float counter = 3.0f;
-
-static int32_t playerScore = 0;
-static int32_t enemyScore = 0;
+static float _counter = 3.0f;
 
 typedef struct
 {
@@ -29,7 +29,7 @@ typedef struct
     Color color;
 } Score_t;
 
-static Score_t scores[2];
+static Score_t _scores[2];
 
 //----------------------------------------------------------------------------------
 // Static functions definition.
@@ -60,10 +60,10 @@ PONG Screen_t *init_game(void)
     TraceLog(LOG_INFO, "[GAME]Screen_t structure created.");
 #endif
 
-    pause = false;
-    reset = false;
+    _pause = false;
+    _reset = false;
 
-    counter = 3.0f;
+    _counter = 3.0f;
 
     playerScore = 0;
     enemyScore = 0;
@@ -71,9 +71,9 @@ PONG Screen_t *init_game(void)
     screen->type = GAME_SCREEN_E;
     screen->nextScreenType = UNKNOW_SCREEN_E;
 
-    player = init_player();
-    enemy = init_enemy();
-    ball = init_ball();
+    _player = init_player();
+    _enemy = init_enemy();
+    _ball = init_ball();
 
     _init_score();
     return screen;
@@ -88,49 +88,49 @@ PONG void update_game(Screen_t *const screen)
     }
     else if (IsKeyPressed(KEY_P))
     {
-        pause = !pause;
+        _pause = !_pause;
     }
 
-    if (!pause)
+    if (!_pause)
     {
-        update_player(player);
-        update_enemy(enemy, ball->transform);
+        update_player(_player);
+        update_enemy(_enemy, _ball->transform);
     }
 
     update_ball(
-        ball,
-        player->transform,
-        enemy->transform);
+        _ball,
+        _player->transform,
+        _enemy->transform);
 
     if (check_screen_collision_ball())
     {
-        if (!reset)
+        if (!_reset)
         {
-            if (ball->transform.x > GetScreenWidth() / 2)
+            if (_ball->transform.x > GetScreenWidth() / 2)
                 ++playerScore;
             else
                 ++enemyScore;
 
             if (playerScore >= PONG_MAX_SCORE || enemyScore >= PONG_MAX_SCORE)
             {
-                screen->nextScreenType = MENU_SCREEN_E;
+                screen->nextScreenType = WINNER_SCREEN_E;
                 return;
             }
         }
 
-        reset = true;
-        pause = true;
+        _reset = true;
+        _pause = true;
     }
 
-    if (reset)
+    if (_reset)
     {
-        counter -= (1.0f / PONG_FPS);
-        if (counter < 0)
+        _counter -= (1.0f / PONG_FPS);
+        if (_counter < 0)
         {
-            counter = 3.0f;
-            reset = false;
-            pause = false;
-            reset_ball(ball);
+            _counter = 3.0f;
+            _reset = false;
+            _pause = false;
+            reset_ball(_ball);
         }
     }
 }
@@ -139,12 +139,12 @@ PONG void draw_game(const Screen_t *const screen)
 {
     ClearBackground($theme->color[2]);
     _draw_line();
-    draw_ball(ball);
-    draw_player(player);
-    draw_enemy(enemy);
+    draw_ball(_ball);
+    draw_player(_player);
+    draw_enemy(_enemy);
     _draw_score();
 
-    if (reset)
+    if (_reset)
         _draw_counter();
 }
 
@@ -152,9 +152,9 @@ PONG void unload_game(Screen_t **ptr)
 {
     if ((*ptr) != NULL)
     {
-        unload_player(&player);
-        unload_enemy(&enemy);
-        unload_ball(&ball);
+        unload_player(&_player);
+        unload_enemy(&_enemy);
+        unload_ball(&_ball);
 
         MemFree((*ptr));
         (*ptr) = NULL;
@@ -169,19 +169,19 @@ PONG void unload_game(Screen_t **ptr)
 //----------------------------------------------------------------------------------
 PONG static void _init_score(void)
 {
-    scores[0].font = $package->fonts[FONT_BM_GERMAR];
-    scores[0].position = (Vector2){PONG_SCORE_SPACE, 10.0f};
-    scores[0].color = $theme->color[3];
+    _scores[0].font = $package->fonts[FONT_BM_GERMAR];
+    _scores[0].position = (Vector2){PONG_SCORE_SPACE, 10.0f};
+    _scores[0].color = $theme->color[3];
 
-    scores[1].font = $package->fonts[FONT_BM_GERMAR];
-    int32_t width = MeasureText("000", scores[1].font.baseSize);
-    scores[1].position = (Vector2){GetScreenWidth() - width - PONG_SCORE_SPACE, 10.0f};
-    scores[1].color = $theme->color[3];
+    _scores[1].font = $package->fonts[FONT_BM_GERMAR];
+    int32_t width = MeasureText("000", _scores[1].font.baseSize);
+    _scores[1].position = (Vector2){GetScreenWidth() - width - PONG_SCORE_SPACE, 10.0f};
+    _scores[1].color = $theme->color[3];
 }
 
 PONG static void _draw_counter(void)
 {
-    const char *text = TextFormat("%1.0f", ceilf(counter));
+    const char *text = TextFormat("%1.0f", ceilf(_counter));
     Font font = $package->fonts[FONT_04B_03_E];
     int32_t fontSize = font.baseSize * 3;
     Vector2 measure = MeasureTextEx(font, text, fontSize, 1);
@@ -191,7 +191,7 @@ PONG static void _draw_counter(void)
         GetScreenWidth() / 2 - (measure.x / 3),
         GetScreenHeight() / 2 - (measure.y / 3),
         fontSize,
-        $theme->color[3]);
+        $theme->color[0]);
 }
 
 PONG static void _draw_line(void)
@@ -202,7 +202,7 @@ PONG static void _draw_line(void)
         0,
         5,
         GetScreenHeight(),
-        $theme->color[0]);
+        $theme->color[1]);
 }
 
 PONG static void _draw_score(void)
@@ -212,11 +212,11 @@ PONG static void _draw_score(void)
     for (size_t i = 0; i < 2; ++i)
     {
         DrawTextEx(
-            scores[i].font,
+            _scores[i].font,
             TextFormat("%.3d", score[i]),
-            scores[i].position,
-            scores[i].font.baseSize,
+            _scores[i].position,
+            _scores[i].font.baseSize,
             1,
-            scores[i].color);
+            _scores[i].color);
     }
 }
