@@ -61,7 +61,7 @@ PONG Screen_t *init_winner(void)
 }
 PONG void update_winner(Screen_t *const screen)
 {
-    if (IsKeyPressed(KEY_ESCAPE))
+    if (IsKeyPressed(KEY_BACKSPACE))
     {
         screen->nextScreenType = MENU_SCREEN_E;
     }
